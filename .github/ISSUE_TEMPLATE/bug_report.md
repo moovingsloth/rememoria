@@ -3,14 +3,8 @@ name: Bug report
 about: 'Report a bug '
 title: '[BUG]:'
 labels: ''
-assignees: ''
 ---
 
-### **Package Scope**
-
-<!-- Is this issue related to a specific package? -->
-
-Package name:
 
 ### **Describe the bug**
 
