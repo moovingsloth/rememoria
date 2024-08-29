@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v3
       - name: Install JDK 11
@@ -35,12 +34,10 @@ jobs:
           echo "${{ secrets.COMMON }}" > ./application-common.yml
           echo "${{ secrets.PROD }}" > ./application-prod.yml
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-        shell: bash
-
-      - name: Build and Test
-        run: ./gradlew build test
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build -x test
 
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip .
