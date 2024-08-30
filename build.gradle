@@ -34,8 +34,21 @@ java {
 	}
 }
 
+ 
 jar {
-	archiveBaseName = 'rememoria'
-	archiveVersion = '0.0.1-SNAPSHOT'
-	destinationDirectory = file("$buildDir/libs")
+    archiveBaseName = 'rememoria'
+    archiveVersion = '0.0.1-SNAPSHOT'
+    enabled = true
+    destinationDirectory = file("$buildDir/libs")
+}
+
+bootJar {
+    archiveBaseName = 'rememoria'
+    archiveVersion = '0.0.1-SNAPSHOT'
+    destinationDirectory = file("$buildDir/libs")
+    enabled = true
+}
+
+tasks.named('jar') {
+    enabled = false
 }
