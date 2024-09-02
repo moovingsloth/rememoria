@@ -3,7 +3,6 @@ name: Bug report
 about: 'Report a bug '
 title: '[BUG]:'
 labels: ''
-<<<<<<< HEAD
 assignees: ''
 ---
 
@@ -12,10 +11,6 @@ assignees: ''
 <!-- Is this issue related to a specific package? -->
 
 Package name:
-=======
----
-
->>>>>>> main
 
 ### **Describe the bug**
 
@@ -39,8 +34,4 @@ Package name:
 
 ### **Additional context**
 
-<<<<<<< HEAD
 <!-- Add any other context about the problem here. -->
-=======
-<!-- Add any other context about the problem here. -->
->>>>>>> main
