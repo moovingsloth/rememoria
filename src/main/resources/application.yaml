@@ -7,3 +7,4 @@ spring:
     password: tommy2450.
   thymeleaf:
     cache: false
+

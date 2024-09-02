@@ -8,10 +8,3 @@ spring:
   thymeleaf:
     cache: false
 
-  # spring data jpa 설정
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    open-in-view: false
-    show-sql: true
-    hibernate:
-      ddl-auto: update
