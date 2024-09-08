@@ -8,6 +8,7 @@ spring:
   thymeleaf:
     cache: false
 
+<<<<<<< HEAD
   # spring data jpa 설정
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -21,3 +22,5 @@ spring:
       client-id: b33ae9b3fa427d11173b56a61f623366
       client-secret: 7R2ATPoEwoc2LDDFLJuFRhwhqsknRjoV
     redirect-uri: http://localhost:3000/login/oauth/kakao
+=======
+>>>>>>> origin/develop
