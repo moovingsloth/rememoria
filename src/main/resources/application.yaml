@@ -7,7 +7,6 @@ spring:
     password: tommy2450.
   thymeleaf:
     cache: false
-
   # spring data jpa 설정
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -16,8 +15,21 @@ spring:
     hibernate:
       ddl-auto: update
 
+
   kakao:
     key:
       client-id: b33ae9b3fa427d11173b56a61f623366
       client-secret: 7R2ATPoEwoc2LDDFLJuFRhwhqsknRjoV
     redirect-uri: http://localhost:3000/login/oauth/kakao
+
+  redis:
+    host: localhost
+    port: 6379
+
+jwt:
+  secret-key:
+    access: ThisIsAccessKeyThisIsAccessKeyThisIsAccessKeyThisIsAccessKeyThisIsAccessKeyThisIsAccessKey
+    refresh: ThisIsRefreshKeyThisIsRefreshKeyThisIsRefreshKeyThisIsRefreshKeyThisIsRefreshKeyThisIsRefreshKey
+  expired-min:
+    access: 60
+    refresh: 4320
