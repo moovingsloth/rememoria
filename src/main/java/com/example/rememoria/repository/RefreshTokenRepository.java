@@ -1,11 +1,12 @@
 package com.example.rememoria.repository;
 
-import java.time.Duration;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import java.time.Duration;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
