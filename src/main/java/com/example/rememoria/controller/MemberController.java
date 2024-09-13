@@ -19,6 +19,8 @@ public class MemberController {
         String access_Token = ms.getAccessToken(code);
         HashMap<String, Object> userInfo = ms.getUserInfo(access_Token);
         System.out.println("###nickname#### : " + userInfo.get("nickname"));
+        System.out.println("###email#### : " + userInfo.get("email"));
+        System.out.println("###profile_image#### : " + userInfo.get("profile_image"));
 
         return "member/testPage";
     }

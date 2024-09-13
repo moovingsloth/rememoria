@@ -1,5 +1,16 @@
 package com.example.rememoria.service;
 
+import com.example.rememoria.dto.AuthTokens;
+import com.example.rememoria.dto.LoginResponse;
+import com.example.rememoria.entity.Member;
+import com.example.rememoria.repository.MemberRepository;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -8,13 +19,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
-
-import com.google.gson.JsonObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 @Service
 public class MemberService {
@@ -27,6 +31,17 @@ public class MemberService {
 
     @Value("${spring.kakao.key.client-secret}")
     private String kakaoClientSecret;
+
+    private final MemberRepository memberRepository;
+    private final AuthTokensGenerator authTokensGenerator;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    public MemberService(MemberRepository memberRepository, AuthTokensGenerator authTokensGenerator, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
+        this.authTokensGenerator = authTokensGenerator;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     public String getAccessToken(String authorizeCode) {
         String accessToken = "";
@@ -84,10 +99,9 @@ public class MemberService {
         }
         return accessToken;
     }
-    public HashMap<String, Object> getUserInfo(String access_Token) {
 
-        // 요청하는 클라이언트마다 가진 정보가 다를 수 있기에 HashMap타입으로 선언
-        HashMap<String, Object> userInfo = new HashMap<String, Object>();
+    public HashMap<String, Object> getUserInfo(String accessToken) {
+        HashMap<String, Object> userInfo = new HashMap<>();
         String reqURL = "https://kapi.kakao.com/v2/user/me";
         try {
             URL url = new URL(reqURL);
@@ -95,33 +109,58 @@ public class MemberService {
             conn.setRequestMethod("GET");
 
             // 요청에 필요한 Header에 포함될 내용
-            conn.setRequestProperty("Authorization", "Bearer " + access_Token);
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
 
             int responseCode = conn.getResponseCode();
             System.out.println("responseCode : " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            String line = "";
-            String result = "";
+            StringBuilder result = new StringBuilder();
+            String line;
 
             while ((line = br.readLine()) != null) {
-                result += line;
+                result.append(line);
             }
             System.out.println("response body : " + result);
 
-            JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(result);
+            JsonElement element = JsonParser.parseString(result.toString());
 
-            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
+            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
+            JsonObject profile = kakaoAccount.get("profile").getAsJsonObject();
 
-            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+            String nickname = profile.get("nickname").getAsString();
+            String email = kakaoAccount.get("email").getAsString();
+            String profileImage = profile.get("profile_image_url").getAsString();
 
             userInfo.put("nickname", nickname);
+            userInfo.put("email", email);
+            userInfo.put("profile_image", profileImage);
 
+            br.close();
         } catch (IOException e) {
+            System.err.println("Error during Kakao user info request: " + e.getMessage());
             e.printStackTrace();
         }
         return userInfo;
+    }
+
+    private LoginResponse kakaoUserLogin(HashMap<String, Object> userInfo) {
+        Long uid = Long.valueOf(userInfo.get("id").toString());
+        String kakaoEmail = userInfo.get("email").toString();
+        String nickName = userInfo.get("nickname").toString();
+
+        Member kakaoUser = memberRepository.findByEmail(kakaoEmail).orElse(null);
+
+        if (kakaoUser == null) {    // 회원가입
+            kakaoUser = new Member();
+            kakaoUser.setId(uid);
+            kakaoUser.setNickname(nickName);
+            kakaoUser.setEmail(kakaoEmail);
+            // kakaoUser.setLoginType("kakao");
+            memberRepository.save(kakaoUser);
+        }
+        // 토큰 생성
+        AuthTokens token = authTokensGenerator.generate(uid.toString());
+        return new LoginResponse(uid, nickName, kakaoEmail, token);
     }
 }

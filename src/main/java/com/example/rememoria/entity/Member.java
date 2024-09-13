@@ -16,8 +16,11 @@ public class Member extends BaseEntity{
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    private String nickname;
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private String profileImage;
 }
