@@ -1,25 +1,32 @@
 package com.example.rememoria.controller;
 
-import com.example.rememoria.service.MemberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import com.example.rememoria.dto.LoginResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-
+import javax.servlet.http.HttpServletRequest;
+import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/login/oauth")
+@RequiredArgsConstructor
+@RequestMapping("/api/users")
 public class MemberController {
-    @Autowired
-    private MemberService ms;
 
-    @RequestMapping("/kakao")
-    public String kakaoLogin(@RequestParam String code) {
-        String access_Token = ms.getAccessToken(code);
-        HashMap<String, Object> userInfo = ms.getUserInfo(access_Token);
-        System.out.println("###nickname#### : " + userInfo.get("nickname"));
+    private final KakaoService kakaoService;
+    private final AppleService appleService;
 
-        return "member/testPage";
+    //web 버전
+    @ResponseBody
+    @GetMapping("/login/oauth/kakao")
+    public ResponseEntity<LoginResponse> kakaoLogin(@RequestParam String code, HttpServletRequest request){
+        try{
+            // 현재 도메인 확인
+            String currentDomain = request.getServerName();
+            return ResponseEntity.ok(kakaoService.kakaoLogin(code, currentDomain));
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Item Not Found");
+        }
     }
-}
